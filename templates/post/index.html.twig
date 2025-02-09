@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h1>Posts</h1>
+        
+        {% for post in posts %}
+            <article class="mb-4">
+                <h2>{{ post.title }}</h2>
+                {% if post.imageName %}
+                    <img src="{{ vich_uploader_asset(post, 'imageFile') }}" alt="{{ post.title }}">
+                {% endif %}
+                <p>{{ post.content }}</p>
+                <small>Par {{ post.author.name }} le {{ post.createdAt|date('d/m/Y') }}</small>
+            </article>
+        {% endfor %}
+
+        <div class="navigation">
+            {{ knp_pagination_render(posts) }}
+        </div>
+    </div>
+{% endblock %}

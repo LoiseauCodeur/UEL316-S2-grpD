@@ -35,6 +35,9 @@
             "ref": "b131e6cbfe1b898a508987851963fff485986285"
         }
     },
+    "knplabs/knp-paginator-bundle": {
+        "version": "v6.6.1"
+    },
     "symfony/console": {
         "version": "7.2",
         "recipe": {
@@ -187,5 +190,14 @@
     },
     "twig/extra-bundle": {
         "version": "v3.19.0"
+    },
+    "vich/uploader-bundle": {
+        "version": "2.5",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "1.13",
+            "ref": "1b3064c2f6b255c2bc2f56461aaeb76b11e07e36"
+        }
     }
 }

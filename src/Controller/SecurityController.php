@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SecurityController extends AbstractController
 {
+    #[Route('/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils)
     {
         $error = $authenticationUtils->getLastAuthenticationError();
@@ -24,5 +25,12 @@ class SecurityController extends AbstractController
     #[Route('/logout', name: 'app_logout')]
     public function logout(): void
     {
+    }
+
+    #[Route('/test-admin', name: 'test_admin')]
+    public function testAdmin(): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        return new Response('Si vous voyez ceci, vous êtes admin !');
     }
 }
