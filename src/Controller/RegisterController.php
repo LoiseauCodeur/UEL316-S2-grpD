@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordHasherInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\ORM\EntityManagerInterface; // Assurez-vous d'ajouter ce use
+use Doctrine\ORM\EntityManagerInterface;
 
 class RegisterController extends AbstractController
 {
@@ -21,11 +21,9 @@ class RegisterController extends AbstractController
         $registrationForm->handleRequest($request);
 
         if ($registrationForm->isSubmitted() && $registrationForm->isValid()) {
-            // Encoder le mot de passe avec le nouveau hasher
             $hashedPassword = $passwordHasher->hashPassword($user, $user->getPassword());
             $user->setPassword($hashedPassword);
 
-            // Sauvegarder l'utilisateur dans la base de données
             $entityManager->persist($user);
             $entityManager->flush();
 

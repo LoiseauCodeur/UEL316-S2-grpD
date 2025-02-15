@@ -1,22 +1,128 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
-    <div class="container">
-        <h1>Posts</h1>
-        
-        {% for post in posts %}
-            <article class="mb-4">
-                <h2>{{ post.title }}</h2>
-                {% if post.imageName %}
-                    <img src="{{ vich_uploader_asset(post, 'imageFile') }}" alt="{{ post.title }}">
-                {% endif %}
-                <p>{{ post.content }}</p>
-                <small>Par {{ post.author.name }} le {{ post.createdAt|date('d/m/Y') }}</small>
-            </article>
-        {% endfor %}
+{% block title %}Posts{% endblock %}
 
-        <div class="navigation">
-            {{ knp_pagination_render(posts) }}
+{% block body %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Nos Posts</h1>
+        <p class="text-xl text-gray-600">Découvrez les dernières publications de nos auteurs</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm mb-8">
+        <div class="p-6">
+            <div class="flex flex-col lg:flex-row gap-6">
+                <div class="flex-1">
+                    <form action="{{ path('post_index') }}" method="get" class="group">
+                        <div class="relative">
+                            <input type="text" 
+                                   name="search" 
+                                   value="{{ search }}" 
+                                   placeholder="Rechercher un post..." 
+                                   class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow duration-200">
+                        </div>
+                    </form>
+                </div>
+
+                <div class="flex gap-4">
+                    <form action="{{ path('post_index') }}" method="get" class="flex gap-4">
+                        {% if search %}
+                            <input type="hidden" name="search" value="{{ search }}">
+                        {% endif %}
+
+                        <div class="relative">
+                            <select name="date" 
+                                    onchange="this.form.submit()" 
+                                    class="appearance-none pl-4 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white cursor-pointer min-w-[150px]">
+                                <option value="">Date</option>
+                                <option value="today" {% if dateFilter == 'today' %}selected{% endif %}>Aujourd'hui</option>
+                                <option value="week" {% if dateFilter == 'week' %}selected{% endif %}>Cette semaine</option>
+                                <option value="month" {% if dateFilter == 'month' %}selected{% endif %}>Ce mois</option>
+                            </select>
+                        </div>
+
+                        <div class="relative">
+                            <select name="author" 
+                                    onchange="this.form.submit()" 
+                                    class="appearance-none pl-4 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white cursor-pointer min-w-[150px]">
+                                <option value="">Auteur</option>
+                                {% for author in authors %}
+                                    <option value="{{ author.id }}" {% if authorId == author.id %}selected{% endif %}>
+                                        {{ author.firstname }} {{ author.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for post in posts %}
+            <article class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group">
+                {% if post.imageName %}
+                    <div class="aspect-w-16 aspect-h-9 overflow-hidden">
+                        <img src="{{ vich_uploader_asset(post, 'imageFile') }}" 
+                             alt="{{ post.title }}"
+                             class="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                {% endif %}
+                <div class="p-6">
+                    <div class="flex items-center space-x-2 text-sm text-gray-500 mb-3">
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            {{ post.author.name }}
+                        </span>
+                        <span>•</span>
+                        <time datetime="{{ post.createdAt|date('Y-m-d') }}">
+                            {{ post.createdAt|date('d M Y') }}
+                        </time>
+                    </div>
+
+                    <h2 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200">
+                        {{ post.title }}
+                    </h2>
+
+                    <p class="text-gray-600 mb-4 line-clamp-3">
+                        {{ post.content|striptags|slice(0, 150) }}...
+                    </p>
+
+                    <a href="{{ path('post_show', {id: post.id}) }}" 
+                       class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">
+                        Lire la suite
+                        <svg class="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-200" 
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </a>
+                </div>
+            </article>
+        {% else %}
+            <div class="col-span-full bg-white rounded-2xl shadow-sm p-12 text-center">
+                <div class="max-w-sm mx-auto">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                    <h3 class="mt-4 text-lg font-medium text-gray-900">Aucun post trouvé</h3>
+                    <p class="mt-2 text-gray-600">Essayez de modifier vos critères de recherche ou revenez plus tard.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="mt-8">
+        {{ knp_pagination_render(posts, null, {
+            'align': 'center',
+            'size': 'large',
+            'rounded': true,
+            'next_label': '›',
+            'prev_label': '‹',
+            'class': 'flex justify-center space-x-2'
+        }) }}
+    </div>
+</div>
 {% endblock %}

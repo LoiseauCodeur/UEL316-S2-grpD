@@ -1,24 +1,116 @@
-<!doctype html>
-<html lang="fr">
-<head>
-   <meta charset="utf-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-   <title>Bienvenue sur ma page Symfony!</title>
-</head>
-<body>
-   <div class="jumbotron">
-      <h1 class="display-4">Bonjour, sur le site de notre groupe !</h1>
-      <p class="lead">nous sommes étudiants et voici notre première page Symfony 4, réalisée dans le cadre de notre Licence.</p>
-      <hr class="my-4">
-   </div>
-           {% if app.user %}
-            <div class="mb-3">
-                You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+        <section class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 animate-fade-in">
+                Bienvenue sur notre Blog
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Découvrez nos derniers articles et posts
+            </p>
+        </section>
+
+        <section class="space-y-8">
+            <div class="flex justify-between items-center">
+                <h2 class="text-3xl font-bold text-gray-900 inline-block relative group">
+                    Articles récents
+                    <span class="absolute bottom-0 left-0 w-full h-1 bg-blue-500 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
+                </h2>
+                <a href="{{ path('article_index') }}" class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                    Voir tous les articles →
+                </a>
             </div>
-        {% endif %}
-   <footer class="bg-dark text-white text-center py-3">
-      <p>&copy; 2025 - Licence Symfony</p>
-   </footer>
-</body>
-</html>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for article in articles %}
+                    <article class="bg-white rounded-xl shadow-sm hover:shadow-xl transition-shadow duration-300 overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
+                        <div class="p-6 space-y-4">
+                            <div class="text-sm text-blue-600 font-semibold tracking-wide uppercase">
+                                {{ article.category.name|default('Non catégorisé') }}
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+                                {{ article.title }}
+                            </h3>
+                            <p class="text-gray-600 line-clamp-3">
+                                {{ article.content|striptags|slice(0, 150) }}...
+                            </p>
+                            <div class="pt-4 flex items-center justify-between border-t border-gray-100">
+                                <span class="flex items-center text-sm text-gray-500">
+                                    <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    {{ article.publishDay|date('d M Y') }}
+                                </span>
+                                <a href="{{ path('article_show', {'id': article.id}) }}" 
+                                   class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors duration-200">
+                                    Lire
+                                    <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="space-y-8 mt-16">
+            <div class="flex justify-between items-center">
+                <h2 class="text-3xl font-bold text-gray-900 inline-block relative group">
+                    Posts récents
+                    <span class="absolute bottom-0 left-0 w-full h-1 bg-green-500 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
+                </h2>
+                <a href="{{ path('post_index') }}" class="text-green-600 hover:text-green-800 transition-colors duration-200">
+                    Voir tous les posts →
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for post in posts %}
+                    <article class="bg-white rounded-xl shadow-sm hover:shadow-xl transition-shadow duration-300 overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
+                        {% if post.imageName %}
+                            <div class="aspect-w-16 aspect-h-9">
+                                <img src="{{ vich_uploader_asset(post, 'imageFile') }}" 
+                                     alt="{{ post.title }}"
+                                     class="w-full h-48 object-cover">
+                            </div>
+                        {% endif %}
+                        <div class="p-6 space-y-4">
+                            <h3 class="text-xl font-bold text-gray-900 mb-2 line-clamp-2 hover:text-green-600 transition-colors">
+                                {{ post.title }}
+                            </h3>
+                            <p class="text-gray-600 line-clamp-3">
+                                {{ post.content|striptags|slice(0, 150) }}...
+                            </p>
+                            <div class="pt-4 flex items-center justify-between border-t border-gray-100">
+                                <div class="flex items-center space-x-4">
+                                    <span class="flex items-center text-sm text-gray-500">
+                                        <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        {{ post.author.name }}
+                                    </span>
+                                    <span class="text-gray-300">•</span>
+                                    <span class="text-sm text-gray-500">
+                                        {{ post.createdAt|date('d M Y') }}
+                                    </span>
+                                </div>
+                                <a href="{{ path('post_show', {'id': post.id}) }}" 
+                                   class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition-colors duration-200">
+                                    Lire
+                                    <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+{% endblock %}

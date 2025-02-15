@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Articles{% endblock %}
+
+{% block body %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Nos Articles</h1>
+        <p class="text-xl text-gray-600">Découvrez tous nos articles et restez informé</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm mb-8">
+    <div class="p-6">
+        <div class="flex flex-col lg:flex-row gap-6">
+            <div class="flex-1">
+                <form action="{{ path('article_index') }}" method="get" class="group">
+                    <div class="relative">
+                        <input type="text" 
+                               name="search" 
+                               value="{{ search }}" 
+                               placeholder="Rechercher un article..." 
+                               class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow duration-200">
+                    </div>
+                </form>
+            </div>
+
+            <div class="flex gap-4">
+                <form action="{{ path('article_index') }}" method="get" class="flex gap-4">
+                    {% if search %}
+                        <input type="hidden" name="search" value="{{ search }}">
+                    {% endif %}
+
+                    <div class="relative">
+                        <select name="date" 
+                                onchange="this.form.submit()" 
+                                class="appearance-none pl-4 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white cursor-pointer min-w-[150px]">
+                            <option value="">Date</option>
+                            <option value="today" {% if dateFilter == 'today' %}selected{% endif %}>Aujourd'hui</option>
+                            <option value="week" {% if dateFilter == 'week' %}selected{% endif %}>Cette semaine</option>
+                            <option value="month" {% if dateFilter == 'month' %}selected{% endif %}>Ce mois</option>
+                        </select>
+                    </div>
+
+                    <div class="relative">
+                        <select name="category" 
+                                onchange="this.form.submit()" 
+                                class="appearance-none pl-4 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white cursor-pointer min-w-[150px]">
+                            <option value="">Catégorie</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}" {% if categoryId == category.id %}selected{% endif %}>
+                                    {{ category.Name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="space-y-6">
+        {% for article in articles %}
+            <article class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group">
+                <div class="p-6 sm:p-8">
+                    <div class="flex flex-col sm:flex-row justify-between">
+                        <div class="flex-1 mb-4 sm:mb-0 sm:mr-8">
+                            <div class="flex items-center space-x-2 text-sm text-gray-500 mb-3">
+                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                                    {{ article.category.name|default('Non catégorisé') }}
+                                </span>
+                                <span>•</span>
+                                <time datetime="{{ article.publishDay|date('Y-m-d') }}">
+                                    {{ article.publishDay|date('d M Y') }}
+                                </time>
+                            </div>
+                            
+                            <h2 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200">
+                                {{ article.Title }}
+                            </h2>
+                            
+                            <p class="text-gray-600 mb-4 line-clamp-2">
+                                {{ article.content|striptags|slice(0, 200) }}...
+                            </p>
+                            
+                            <a href="{{ path('article_show', {id: article.id}) }}" 
+                               class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">
+                                Lire l'article complet
+                                <svg class="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-200" 
+                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        {% else %}
+            <div class="bg-white rounded-2xl shadow-sm p-12 text-center">
+                <div class="max-w-sm mx-auto">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                    <h3 class="mt-4 text-lg font-medium text-gray-900">Aucun article trouvé</h3>
+                    <p class="mt-2 text-gray-600">Essayez de modifier vos critères de recherche ou revenez plus tard.</p>
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="mt-8">
+            {{ knp_pagination_render(articles, null, {
+                'align': 'center',
+                'size': 'large',
+                'rounded': true,
+                'next_label': '›',
+                'prev_label': '‹',
+                'class': 'flex justify-center space-x-2'
+            }) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

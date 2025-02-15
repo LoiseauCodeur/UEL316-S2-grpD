@@ -1,20 +1,42 @@
 <?php
 namespace App\Controller;
 
+use App\Repository\PostRepository;
+use App\Repository\ArticleRepository;
+use App\Entity\Post;
+use App\Entity\Article;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 class DefaultController extends AbstractController
 {
-    public function index()
+    #[Route('/', name: 'app_home')]
+    public function index(PostRepository $postRepository, ArticleRepository $articleRepository): Response
     {
-        // Vérifie si l'utilisateur est authentifié
-        if (!$this->getUser()) {
-            // Redirige vers la page de login si l'utilisateur n'est pas authentifié
-            return $this->redirectToRoute('app_login'); // Remplacez 'app_login' par le nom de votre route de login
-        }
+        $posts = $postRepository->findBy([], ['createdAt' => 'DESC']);
+        $articles = $articleRepository->findBy([], ['publishDay' => 'DESC']);
 
-        // Si l'utilisateur est authentifié, affiche la page index
-        return $this->render('Default/index.html.twig');
+        return $this->render('Default/index.html.twig', [
+            'posts' => $posts,
+            'articles' => $articles,
+        ]);
+    }
+
+    #[Route('/article/{id}', name: 'article_show')]
+    public function showArticle(Article $article): Response
+    {
+        return $this->render('Default/article_show.html.twig', [
+            'article' => $article
+        ]);
+    }
+
+    #[Route('/post/{id}', name: 'post_show')]
+    public function showPost(Post $post): Response
+    {
+        return $this->render('Default/post_show.html.twig', [
+            'post' => $post
+        ]);
     }
 }

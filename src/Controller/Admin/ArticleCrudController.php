@@ -21,7 +21,7 @@ class ArticleCrudController extends AbstractCrudController
         return [
             TextField::new('Title'),
             TextEditorField::new('content'),
-            DateTimeField::new('Publish_day'),
+            DateTimeField::new('publishDay'),
             AssociationField::new('Author'),
             AssociationField::new('Category'),
         ];

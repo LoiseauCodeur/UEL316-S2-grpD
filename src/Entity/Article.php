@@ -23,9 +23,9 @@ class Article
     private ?string $content = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $Publish_day = null;
+    private ?\DateTimeInterface $publishDay = null;
 
-    #[ORM\OneToMany(targetEntity: user::class, mappedBy: 'article')]
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'article')]
     private Collection $Author;
 
     #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'article')]
@@ -68,12 +68,12 @@ class Article
 
     public function getPublishDay(): ?\DateTimeInterface
     {
-        return $this->Publish_day;
+        return $this->publishDay ;
     }
 
-    public function setPublishDay(\DateTimeInterface $Publish_day): static
+    public function setPublishDay(\DateTimeInterface $publishDay ): static
     {
-        $this->Publish_day = $Publish_day;
+        $this->publishDay  = $publishDay ;
 
         return $this;
     }
@@ -86,7 +86,7 @@ class Article
         return $this->Author;
     }
 
-    public function addAuthor(user $author): static
+    public function addAuthor(User $author): static
     {
         if (!$this->Author->contains($author)) {
             $this->Author->add($author);
@@ -96,10 +96,9 @@ class Article
         return $this;
     }
 
-    public function removeAuthor(user $author): static
+    public function removeAuthor(User $author): static
     {
         if ($this->Author->removeElement($author)) {
-            // set the owning side to null (unless already changed)
             if ($author->getArticle() === $this) {
                 $author->setArticle(null);
             }
@@ -129,7 +128,6 @@ class Article
     public function removeCategory(Category $category): static
     {
         if ($this->Category->removeElement($category)) {
-            // set the owning side to null (unless already changed)
             if ($category->getArticle() === $this) {
                 $category->setArticle(null);
             }
